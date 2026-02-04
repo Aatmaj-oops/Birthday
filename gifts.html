@@ -120,10 +120,21 @@ body{
 /* Parchment */
 .paper{
   width:100vw;
-  height:100vh;
+  max-width:900px;
+  height:90vh;
+
   background:radial-gradient(circle at top,#f8efd8,#e3cfa3);
-  padding:60px 10vw;
-  box-shadow:inset 0 0 90px rgba(0,0,0,0.45);
+  padding:60px 8vw 80px;
+
+  box-shadow:
+    inset 0 0 90px rgba(0,0,0,0.45),
+    0 40px 100px rgba(0,0,0,0.6);
+
+  border-radius:12px;
+
+  overflow-y:auto;              /* ✅ ENABLE SCROLL */
+  overscroll-behavior:contain;
+
   transform-origin:top center;
   animation:unroll .9s ease forwards;
 }
@@ -133,10 +144,12 @@ body{
 }
 
 .paper p{
-  font-size:26px;
-  line-height:1.8;
+  font-size:clamp(18px, 2.8vw, 26px);
+  line-height:1.9;
   letter-spacing:0.6px;
   text-align:center;
+  max-width:700px;
+  margin:0 auto;
 }
 
 .closeBtn{
@@ -241,6 +254,13 @@ body{
     opacity:1;
   }
 }
+.closeBtn{
+  position:sticky;
+  bottom:0;
+  padding-top:30px;
+  background:linear-gradient(to top,#e3cfa3 60%,transparent);
+}
+
 
 </style>
 </head>
