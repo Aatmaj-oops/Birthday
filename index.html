@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday Cuutu 💖</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      overflow: hidden;
+      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #ffb6d5, #ffd6e8, #ffe6f2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      user-select: none;
+    }
+
+    /* ======= SHARED UI ======= */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.985);
+    }
+
+    .card {
+      width: min(92%, 600px);
+      background: rgba(255, 255, 255, 0.40);
+      border: 2px solid rgba(255, 105, 180, 0.35);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 26px 22px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+      z-index: 3;
+    }
+
+    /* Bubble-ish cute heading */
+    .title {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 900;
+      color: #ff2f86;
+      letter-spacing: 0.5px;
+      text-shadow:
+        0 2px 0 rgba(255,255,255,0.85),
+        0 10px 22px rgba(255, 0, 120, 0.18);
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      color: rgba(0,0,0,0.60);
+      margin-bottom: 18px;
+      font-weight: 650;
+    }
+
+    .btnRow {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 15px;
+      transition: transform 0.18s ease, filter 0.18s ease;
+      min-width: 140px;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn:hover { filter: brightness(1.03); }
+
+    .btnYes {
+      background: linear-gradient(135deg, #ff4fa2, #ff78bd);
+      color: #fff;
+      box-shadow: 0 10px 20px rgba(255, 79, 162, 0.25);
+    }
+    .btnNo {
+      background: rgba(255, 255, 255, 0.55);
+      color: #ff2f86;
+      border: 2px solid rgba(255, 47, 134, 0.28);
+    }
+
+    /* ======= CRY SCREEN ======= */
+    .cryScreen { background: #fff1f7; }
+    .cryBg {
+      position: absolute;
+      inset: 0;
+      opacity: 0.92;
+      background-size: 110px 110px;
+      background-image:
+        radial-gradient(circle at 30px 30px, rgba(255, 255, 255, 0.35) 0 22px, transparent 23px),
+        radial-gradient(circle at 80px 70px, rgba(255, 255, 255, 0.25) 0 18px, transparent 19px);
+    }
+    .cryEmojiLayer {
+      position: absolute;
+      inset: 0;
+      font-size: 42px;
+      opacity: 0.35;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-auto-rows: 1fr;
+      padding: 12px;
+      gap: 6px;
+      pointer-events: none;
+      filter: saturate(1.1);
+    }
+    .cryEmojiLayer span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-6deg);
+    }
+
+    /* ======= MAIN (COUNTDOWN) SCREEN ======= */
+    .bdayScreen {
+      background: linear-gradient(135deg, #ffb6d5, #ffd6e8, #ffe6f2);
+    }
+
+    /* Balloon background layer */
+    .balloonLayer {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .balloon {
+      position: absolute;
+      bottom: -120px;
+      width: 40px;
+      height: 52px;
+      border-radius: 50% 50% 48% 48%;
+      opacity: 0.9;
+      animation: floatUp linear forwards;
+      box-shadow: inset -8px -10px 0 rgba(0,0,0,0.10);
+    }
+    .balloon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 52px;
+      width: 2px;
+      height: 45px;
+      background: rgba(0,0,0,0.25);
+      transform: translateX(-50%);
+      border-radius: 2px;
+    }
+    @keyframes floatUp {
+      from { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.0; }
+      10% { opacity: 0.92; }
+      to { transform: translateY(-120vh) translateX(var(--drift)) rotate(var(--rot)); opacity: 0.0; }
+    }
+
+    /* Top countdown bar */
+    .topBar {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.55);
+      border: 2px solid rgba(255,105,180,0.28);
+      backdrop-filter: blur(10px);
+      border-radius: 999px;
+      padding: 10px 16px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      font-weight: 900;
+      color: #ff2f86;
+      box-shadow: 0 12px 26px rgba(0,0,0,0.10);
+      z-index: 5;
+    }
+    .timerText { font-size: 14px; color: rgba(0,0,0,0.65); font-weight: 900; }
+    .timeVal { font-size: 16px; letter-spacing: 0.5px; }
+
+    /* Cake placeholder */
+    .cakeWrap {
+      margin-top: 6px;
+      display: grid;
+      gap: 14px;
+      justify-items: center;
+    }
+    .cakeFrame {
+      width: min(92%, 390px);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.55);
+      border: 2px solid rgba(255,105,180,0.25);
+      padding: 14px;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .cakeImg {
+      width: 100%;
+      border-radius: 18px;
+      display: block;
+      filter: blur(7px) saturate(1.1);
+      transform: scale(1.03);
+    }
+    .constructionTag {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 16px;
+      gap: 8px;
+    }
+    .constructionTag .label {
+      background: rgba(255,255,255,0.72);
+      border: 2px dashed rgba(255,47,134,0.35);
+      border-radius: 18px;
+      padding: 10px 14px;
+      font-weight: 950;
+      color: #ff2f86;
+      box-shadow: 0 10px 22px rgba(255, 47, 134, 0.10);
+    }
+    .constructionTag .small {
+      font-size: 13px;
+      color: rgba(0,0,0,0.60);
+      font-weight: 800;
+    }
+
+    /* Fade overlay */
+    .fadeOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 182, 213, 0.45);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease;
+      z-index: 10;
+    }
+    .fadeOverlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="fadeOverlay" id="fadeOverlay"></div>
+
+  <!-- ======= SCREEN 1: ASK ======= -->
+  <section class="screen" id="askScreen">
+    <div class="card">
+      <div class="title">Madamji 🥺🎀</div>
+      <div class="subtitle">Do you wanna see what I prepared for you?</div>
+
+      <div class="btnRow">
+        <button class="btn btnYes" id="yesBtn">YES 💖</button>
+        <button class="btn btnNo" id="noBtn">NO 😤</button>
+      </div>
+
+      <div class="subtitle" style="font-size:13px; opacity:0.85; margin-top:14px;">
+        (Choose wisely... 😌)
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= SCREEN 2: CRY ======= -->
+  <section class="screen cryScreen hidden" id="cryScreen">
+    <div class="cryBg"></div>
+    <div class="cryEmojiLayer" aria-hidden="true" id="cryEmojiLayer"></div>
+
+    <div class="card">
+      <div class="title">Please see naaaa 😭💗</div>
+      <div class="subtitle">I made it with full heart, Madamji 🥺</div>
+
+      <div class="btnRow">
+        <button class="btn btnYes" id="okayBtn">Okay… 😔</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= SCREEN 3: BALLOONS + COUNTDOWN ======= -->
+  <section class="screen bdayScreen hidden" id="bdayScreen">
+    <div class="balloonLayer" id="balloonLayer"></div>
+
+    <div class="topBar">
+      <span class="timerText">Countdown:</span>
+      <span class="timeVal" id="countdown">01:00</span>
+    </div>
+
+    <div class="card">
+      <div class="title">Happy Birthday Cuutu 💖</div>
+      <div class="subtitle">For Aarabhi 🎀</div>
+
+      <div class="cakeWrap">
+        <div class="cakeFrame">
+          <img
+            class="cakeImg"
+            alt="Cake"
+            src='data:image/svg+xml;utf8,
+              <svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+                <defs>
+                  <linearGradient id="g" x1="0" x2="1">
+                    <stop offset="0" stop-color="%23ff8dc5"/>
+                    <stop offset="1" stop-color="%23ffd1e6"/>
+                  </linearGradient>
+                </defs>
+                <rect width="100%" height="100%" fill="%23ffe6f2"/>
+                <ellipse cx="400" cy="410" rx="240" ry="45" fill="%23ffb6d5" opacity="0.6"/>
+                <rect x="220" y="170" width="360" height="220" rx="45" fill="url(%23g)"/>
+                <rect x="250" y="140" width="300" height="70" rx="35" fill="%23fff"/>
+                <circle cx="300" cy="255" r="14" fill="%23fff"/>
+                <circle cx="350" cy="290" r="14" fill="%23fff"/>
+                <circle cx="400" cy="265" r="14" fill="%23fff"/>
+                <circle cx="450" cy="310" r="14" fill="%23fff"/>
+                <circle cx="500" cy="255" r="14" fill="%23fff"/>
+                <rect x="340" y="90" width="20" height="70" rx="8" fill="%23ff5aa8"/>
+                <rect x="390" y="90" width="20" height="70" rx="8" fill="%23ff5aa8"/>
+                <rect x="440" y="90" width="20" height="70" rx="8" fill="%23ff5aa8"/>
+                <path d="M350 85 C340 70, 360 60, 350 45 C365 55, 380 70, 350 85 Z" fill="%23ffcc66"/>
+                <path d="M400 85 C390 70, 410 60, 400 45 C415 55, 430 70, 400 85 Z" fill="%23ffcc66"/>
+                <path d="M450 85 C440 70, 460 60, 450 45 C465 55, 480 70, 450 85 Z" fill="%23ffcc66"/>
+              </svg>'
+          />
+
+          <div class="constructionTag">
+            <div class="label">Cakes under construction 🚧🎂</div>
+            <div class="small">Wait for the magic… hehe 💖</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subtitle" style="margin-top:16px;">
+        Balloons for Madamji 🎈✨
+      </div>
+      <div class="subtitle" style="font-size:13px; margin-top:-10px; opacity:0.85;">
+        After countdown ends → surprise opens automatically 😌
+      </div>
+    </div>
+  </section>
+
+  <!-- ======= AUDIO: tiny violin for NO ======= -->
+  <audio id="violinAudio" preload="auto">
+    <!-- Simple tiny sound (offline). Replace later if you want. -->
+    <source src="data:audio/wav;base64,UklGRlQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YVAAAAAAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA=" type="audio/wav">
+  </audio>
+
+  <script>
+    const askScreen = document.getElementById("askScreen");
+    const cryScreen = document.getElementById("cryScreen");
+    const bdayScreen = document.getElementById("bdayScreen");
+
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const okayBtn = document.getElementById("okayBtn");
+
+    const fadeOverlay = document.getElementById("fadeOverlay");
+    const violinAudio = document.getElementById("violinAudio");
+
+    const balloonLayer = document.getElementById("balloonLayer");
+    const countdownEl = document.getElementById("countdown");
+
+    // ======= CRY EMOJI WALLPAPER =======
+    const cryEmojiLayer = document.getElementById("cryEmojiLayer");
+    function buildCryWallpaper() {
+      cryEmojiLayer.innerHTML = "";
+      const total = 64;
+      for (let i = 0; i < total; i++) {
+        const s = document.createElement("span");
+        s.textContent = "😭";
+        cryEmojiLayer.appendChild(s);
+      }
+    }
+    buildCryWallpaper();
+
+    // ======= SCREEN SWITCH =======
+    function showScreen(screenToShow) {
+      [askScreen, cryScreen, bdayScreen].forEach(scr => scr.classList.add("hidden"));
+      screenToShow.classList.remove("hidden");
+    }
+    showScreen(askScreen);
+
+    // ======= BALLOONS =======
+    let balloonInterval = null;
+
+    function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function spawnBalloon() {
+      const balloon = document.createElement("div");
+      balloon.className = "balloon";
+
+      const colors = ["#ff4fa2", "#ff77b7", "#ffd166", "#9bdeff", "#b8ffb8", "#c7b1ff", "#ff9f9f"];
+      balloon.style.background = randomFrom(colors);
+
+      balloon.style.left = (Math.random() * 100) + "vw";
+
+      const size = 28 + Math.random() * 32;
+      balloon.style.width = size + "px";
+      balloon.style.height = (size * 1.25) + "px";
+
+      const duration = 6 + Math.random() * 6;
+      balloon.style.animationDuration = duration + "s";
+
+      balloon.style.setProperty("--drift", (Math.random() * 80 - 40).toFixed(0) + "px");
+      balloon.style.setProperty("--rot", (Math.random() * 24 - 12).toFixed(0) + "deg");
+
+      balloonLayer.appendChild(balloon);
+      setTimeout(() => balloon.remove(), (duration * 1000) + 200);
+    }
+
+    function startBalloons() {
+      if (balloonInterval) return;
+      for (let i = 0; i < 10; i++) setTimeout(spawnBalloon, i * 140);
+      balloonInterval = setInterval(spawnBalloon, 220);
+    }
+
+    // ======= COUNTDOWN (TEST 1 MIN) =======
+    let countdownInterval = null;
+
+    function formatTime(totalSeconds) {
+      const m = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
+      const s = String(totalSeconds % 60).padStart(2, "0");
+      return `${m}:${s}`;
+    }
+
+    function startCountdownTest() {
+      if (countdownInterval) return;
+
+      let secondsLeft = 60; // TEST: 1 minute
+      countdownEl.textContent = formatTime(secondsLeft);
+
+      countdownInterval = setInterval(() => {
+        secondsLeft--;
+        countdownEl.textContent = formatTime(Math.max(secondsLeft, 0));
+
+        if (secondsLeft <= 0) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+
+          // Redirect to AFTER COUNTDOWN page
+          window.location.href = "after.html";
+        }
+      }, 1000);
+    }
+
+    // ======= BUTTON EVENTS =======
+    noBtn.addEventListener("click", async () => {
+      showScreen(cryScreen);
+      try {
+        violinAudio.currentTime = 0;
+        await violinAudio.play();
+      } catch (e) {}
+    });
+
+    okayBtn.addEventListener("click", () => {
+      violinAudio.pause();
+      violinAudio.currentTime = 0;
+      showScreen(askScreen);
+    });
+
+    yesBtn.addEventListener("click", () => {
+      violinAudio.pause();
+      violinAudio.currentTime = 0;
+
+      fadeOverlay.classList.add("show");
+      setTimeout(() => {
+        showScreen(bdayScreen);
+        fadeOverlay.classList.remove("show");
+        startBalloons();
+        startCountdownTest();
+      }, 650);
+    });
+  </script>
+</body>
+</html>
+
