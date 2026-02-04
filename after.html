@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cuutu Cake Surprise 🎂💖</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body{
+      height:100vh;
+      overflow:hidden;
+      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at 20% 15%, #ffe8f3, #ffd1e6 35%, #ffb6d5 70%, #ffa8cf);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      user-select:none;
+      transition: background 0.6s ease;
+    }
+
+    .glow {
+      position:absolute;
+      inset:-40px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,0.65), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,0.35), transparent 42%),
+        radial-gradient(circle at 55% 80%, rgba(255,255,255,0.25), transparent 48%);
+      filter: blur(10px);
+      pointer-events:none;
+      z-index:0;
+      transition: opacity 0.6s ease;
+    }
+
+    /* ======= DARK VIBE MODE ======= */
+    body.vibeDark{
+      background: radial-gradient(circle at 40% 20%, #1b1b2b, #0d0d18 55%, #07070f);
+    }
+    body.vibeDark .glow{ opacity: 0.12; }
+
+    /* ======= STRING LIGHTS ======= */
+    .stringLights{
+      position:absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 210px;
+      pointer-events:none;
+      z-index: 40;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .stringLights.show{
+      opacity: 1;
+      transform: translateY(0px);
+    }
+
+    .wireSvg{
+      position:absolute;
+      inset: 0;
+      width: 100%;
+      height: 210px;
+    }
+
+    /* 15 bulbs evenly spaced */
+    .bulbs{
+      position:absolute;
+      top: 40px;
+      left: 0;
+      width: 100%;
+      display:grid;
+      grid-template-columns: repeat(15, 1fr);
+      gap: 0px;
+      padding: 0 16px;
+      align-items: start;
+      justify-items: center;
+    }
+
+    .bulb{
+      width: 16px;
+      height: 22px;
+      border-radius: 10px;
+      background: var(--c);
+      box-shadow:
+        0 0 12px rgba(255,255,255,0.45),
+        0 0 26px var(--c);
+      position: relative;
+      opacity: 0.95;
+      animation: twinkle 1.1s infinite alternate;
+    }
+    .bulb::before{
+      content:"";
+      position:absolute;
+      top: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 8px;
+      background: rgba(0,0,0,0.25);
+      border-radius: 5px 5px 3px 3px;
+    }
+
+    .bulb:nth-child(2n){ animation-duration: 0.9s; }
+    .bulb:nth-child(3n){ animation-duration: 1.25s; opacity: 0.88; }
+    .bulb:nth-child(4n){ animation-duration: 1.05s; }
+    .bulb:nth-child(5n){ animation-duration: 1.35s; }
+
+    @keyframes twinkle{
+      from{ transform: translateY(0px) scale(0.94); filter: brightness(0.80); }
+      to{ transform: translateY(3px) scale(1.08); filter: brightness(1.35); }
+    }
+
+    /* ======= MAIN CARD ======= */
+    .card{
+      width:min(92%, 740px);
+      background: rgba(255,255,255,0.42);
+      border: 2px solid rgba(255,105,180,0.28);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 22px 20px 18px;
+      box-shadow: 0 22px 60px rgba(0,0,0,0.14);
+      position:relative;
+      z-index:2;
+      overflow: visible;
+      text-align:center;
+      transition: background 0.6s ease, border-color 0.6s ease;
+    }
+
+    body.vibeDark .card{
+      background: rgba(255,255,255,0.10);
+      border-color: rgba(255,105,180,0.18);
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+    }
+
+    .title{
+      font-size: clamp(24px, 4vw, 40px);
+      font-weight: 1000;
+      color:#ff2f86;
+      letter-spacing:0.6px;
+      text-shadow:
+        0 2px 0 rgba(255,255,255,0.88),
+        0 14px 28px rgba(255,0,120,0.18);
+      margin-bottom:8px;
+      line-height:1.1;
+    }
+    body.vibeDark .title{ text-shadow: 0 0 18px rgba(255,105,180,0.35); }
+
+    .subtitle{
+      font-size: 14px;
+      color: rgba(0,0,0,0.62);
+      font-weight: 750;
+      margin-bottom: 14px;
+      transition: color 0.6s ease;
+    }
+    body.vibeDark .subtitle{ color: rgba(255,255,255,0.75); }
+
+    /* ======= CAKE STAGE ======= */
+    .cakeFrame{
+      width:min(94%, 520px);
+      margin: 0 auto;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.55);
+      border: 2px solid rgba(255,105,180,0.22);
+      padding: 14px;
+      box-shadow: 0 18px 44px rgba(0,0,0,0.12);
+      position: relative;
+      overflow: visible;
+      transition: background 0.6s ease, border-color 0.6s ease;
+    }
+    body.vibeDark .cakeFrame{
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,105,180,0.16);
+      box-shadow: 0 22px 60px rgba(0,0,0,0.35);
+    }
+
+    .cakeCanvas{
+      width:100%;
+      height: 330px;
+      border-radius: 18px;
+      position: relative;
+      overflow: visible;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.75), rgba(255,255,255,0.35)),
+        linear-gradient(180deg, rgba(255,182,213,0.25), rgba(255,255,255,0.25));
+      border: 2px solid rgba(255,105,180,0.18);
+      transition: background 0.6s ease, border-color 0.6s ease;
+    }
+    body.vibeDark .cakeCanvas{
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.10), rgba(255,255,255,0.03));
+      border-color: rgba(255,105,180,0.12);
+    }
+
+    .plate{
+      position:absolute;
+      left:50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: 86%;
+      height: 44px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
+      box-shadow:
+        0 18px 30px rgba(0,0,0,0.10),
+        inset 0 -10px 0 rgba(0,0,0,0.05);
+      border: 2px solid rgba(255,105,180,0.16);
+      transition: opacity 0.6s ease;
+    }
+    body.vibeDark .plate{ opacity: 0.85; }
+
+    .cakeBody{
+      position:absolute;
+      left:50%;
+      bottom: 38px;
+      transform: translateX(-50%);
+      width: 78%;
+      height: 170px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #ff60ad 0%, #ff2f86 55%, #ff1a78 100%);
+      box-shadow:
+        0 26px 34px rgba(0,0,0,0.16),
+        inset 0 -18px 0 rgba(0,0,0,0.10);
+    }
+
+    .icingTop{
+      position:absolute;
+      left:50%;
+      bottom: 196px;
+      transform: translateX(-50%);
+      width: 72%;
+      height: 74px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff 0%, #ffe8f3 60%, #ffd6e8 100%);
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.10),
+        inset 0 -12px 0 rgba(0,0,0,0.06);
+    }
+
+    .drips{
+      position:absolute;
+      left:50%;
+      bottom: 170px;
+      transform: translateX(-50%);
+      width: 72%;
+      height: 70px;
+      pointer-events:none;
+    }
+    .drip{
+      position:absolute;
+      top: 0;
+      width: 34px;
+      border-radius: 0 0 22px 22px;
+      background: linear-gradient(180deg, #fff, #ffe8f3);
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.04);
+      opacity: 0.98;
+    }
+    .drip.d1{ left: 6%;  height: 54px; }
+    .drip.d2{ left: 22%; height: 66px; width: 38px; }
+    .drip.d3{ left: 42%; height: 58px; width: 36px; }
+    .drip.d4{ left: 62%; height: 70px; width: 40px; }
+    .drip.d5{ left: 80%; height: 52px; width: 34px; }
+
+    .sprinkles{
+      position:absolute;
+      left:50%;
+      bottom: 232px;
+      transform: translateX(-50%);
+      width: 68%;
+      height: 24px;
+      display:flex;
+      justify-content: space-around;
+      align-items:center;
+      opacity: 0.95;
+      pointer-events:none;
+    }
+    .sprinkles span{
+      width: 14px;
+      height: 5px;
+      border-radius: 999px;
+      background: var(--c);
+      transform: rotate(var(--r));
+      box-shadow: 0 8px 0 rgba(0,0,0,0.05);
+    }
+
+    .dots{
+      position:absolute;
+      left:50%;
+      bottom: 92px;
+      transform: translateX(-50%);
+      width: 72%;
+      height: 40px;
+      display:flex;
+      justify-content: space-around;
+      align-items:center;
+      pointer-events:none;
+    }
+    .dot{
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--c);
+      box-shadow: 0 10px 16px rgba(0,0,0,0.10);
+    }
+
+    .candles{
+      position:absolute;
+      left:50%;
+      bottom: 238px;
+      transform: translateX(-50%);
+      width: 70%;
+      height: 140px;
+      display:flex;
+      align-items:flex-end;
+      justify-content: space-evenly;
+      gap: 14px;
+      pointer-events:auto;
+      z-index: 10;
+    }
+
+    .candle{
+      width: 18px;
+      height: 74px;
+      border-radius: 10px;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          #ff5aa8 0 10px,
+          #ffd166 10px 20px
+        );
+      position: relative;
+      box-shadow:
+        inset -4px -8px 0 rgba(0,0,0,0.10),
+        0 10px 18px rgba(0,0,0,0.10);
+      cursor: pointer;
+      border: 1px solid rgba(0,0,0,0.06);
+      transform: translateZ(0);
+    }
+
+    .wick{
+      position:absolute;
+      left:50%;
+      top: -8px;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 12px;
+      background: rgba(0,0,0,0.42);
+      border-radius: 2px;
+    }
+
+    .flame{
+      position:absolute;
+      left:50%;
+      top: -48px;
+      transform: translateX(-50%);
+      width: 28px;
+      height: 40px;
+      background:
+        radial-gradient(circle at 45% 70%, rgba(255,255,255,0.95) 0 18%, transparent 19%),
+        radial-gradient(circle at 50% 65%, #ffe79a 0 35%, #ffb000 36% 60%, #ff6a00 61% 78%, #ff2200 79% 100%);
+      border-radius: 50%;
+      filter:
+        drop-shadow(0 0 10px rgba(255, 190, 50, 0.95))
+        drop-shadow(0 0 18px rgba(255, 120, 0, 0.65))
+        drop-shadow(0 0 34px rgba(255, 40, 0, 0.35));
+      transform-origin: 50% 90%;
+      animation: flicker 0.11s infinite alternate;
+      opacity: 1;
+      z-index: 20;
+      pointer-events:none;
+    }
+    .flame::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top: 8px;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 50% 60%, rgba(255,255,255,0.95), rgba(255,240,200,0.15) 70%, transparent 75%);
+      opacity: 0.9;
+    }
+    @keyframes flicker{
+      from{ transform: translateX(-50%) rotate(-2deg) scale(0.96, 0.98); opacity: 0.92; }
+      to{   transform: translateX(-50%) rotate(2deg) scale(1.04, 1.06); opacity: 1; }
+    }
+    .flame.off{ animation:none; opacity:0; filter:none; }
+
+    .smoke{
+      position:absolute;
+      left:50%;
+      top: -38px;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: rgba(120,120,120,0.35);
+      border-radius: 50%;
+      opacity:0;
+      pointer-events:none;
+      z-index: 20;
+    }
+    .smoke.show{ opacity:1; animation: smokeUp 0.9s ease forwards; }
+    @keyframes smokeUp{
+      0%   { transform: translateX(-50%) translateY(0) scale(0.8); opacity: 0.55; }
+      100% { transform: translateX(-50%) translateY(-44px) scale(2.0); opacity: 0; }
+    }
+
+    .bigPop{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      z-index: 60;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 0.25s ease;
+      padding: 18px;
+    }
+    .bigPop.show{ opacity:1; pointer-events:auto; }
+    .bigPop .text{
+      font-size: clamp(28px, 5vw, 60px);
+      font-weight: 1000;
+      color:#ff2f86;
+      text-shadow:
+        0 3px 0 rgba(255,255,255,0.85),
+        0 14px 28px rgba(255,0,120,0.20);
+      background: rgba(255,255,255,0.62);
+      border: 2px solid rgba(255,105,180,0.22);
+      backdrop-filter: blur(10px);
+      border-radius: 28px;
+      padding: 18px 18px;
+      transform: scale(0.86);
+      animation: popIn 0.45s ease forwards;
+      text-align:center;
+      max-width: 900px;
+    }
+    @keyframes popIn{ to { transform: scale(1);} }
+
+    .hint{
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(0,0,0,0.58);
+      font-weight: 750;
+      transition: color 0.6s ease;
+    }
+    body.vibeDark .hint{ color: rgba(255,255,255,0.75); }
+
+    /* ======= POPUP MODALS ======= */
+    .modalBackdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity 0.25s ease;
+      z-index: 80;
+    }
+    .modalBackdrop.show{
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal{
+      width:min(92%, 520px);
+      background: rgba(255,255,255,0.78);
+      border: 2px solid rgba(255,105,180,0.22);
+      backdrop-filter: blur(10px);
+      border-radius: 26px;
+      padding: 18px 16px;
+      text-align:center;
+      box-shadow: 0 18px 46px rgba(0,0,0,0.22);
+    }
+    body.vibeDark .modal{
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,105,180,0.18);
+    }
+    .modal h3{
+      color:#ff2f86;
+      font-weight:1000;
+      font-size: 22px;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 0 rgba(255,255,255,0.85);
+    }
+    body.vibeDark .modal h3{
+      text-shadow: 0 0 18px rgba(255,105,180,0.35);
+    }
+    .modal p{
+      color: rgba(0,0,0,0.65);
+      font-weight: 750;
+      margin-bottom: 14px;
+      line-height: 1.35;
+      transition: color 0.6s ease;
+    }
+    body.vibeDark .modal p{ color: rgba(255,255,255,0.78); }
+
+    .btn{
+      border:none;
+      outline:none;
+      cursor:pointer;
+      padding: 12px 16px;
+      border-radius: 999px;
+      font-weight: 1000;
+      font-size: 14px;
+      color: #fff;
+      background: linear-gradient(135deg, #ff4fa2, #ff78bd);
+      box-shadow: 0 12px 24px rgba(255,79,162,0.22);
+      transition: transform 0.15s ease, filter 0.15s ease;
+      min-width: 170px;
+    }
+    .btn:hover{ filter: brightness(1.03); }
+    .btn:active{ transform: scale(0.97); }
+  </style>
+</head>
+
+<body>
+  <div class="glow"></div>
+
+  <!-- STRING LIGHTS -->
+  <div class="stringLights" id="stringLights">
+    <svg class="wireSvg" viewBox="0 0 1200 260" preserveAspectRatio="none">
+      <!-- 3 semi-circle (scallop) wires -->
+      <path d="M0,90  C200,190 400,-10 600,90  C800,190 1000,-10 1200,90"
+            fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0,90  C200,190 400,-10 600,90  C800,190 1000,-10 1200,90"
+            fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="2" stroke-linecap="round"/>
+
+      <path d="M0,130 C200,230 400,30 600,130 C800,230 1000,30 1200,130"
+            fill="none" stroke="rgba(255,255,255,0.40)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0,130 C200,230 400,30 600,130 C800,230 1000,30 1200,130"
+            fill="none" stroke="rgba(0,0,0,0.16)" stroke-width="2" stroke-linecap="round"/>
+
+      <path d="M0,170 C200,270 400,70 600,170 C800,270 1000,70 1200,170"
+            fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="6" stroke-linecap="round"/>
+      <path d="M0,170 C200,270 400,70 600,170 C800,270 1000,70 1200,170"
+            fill="none" stroke="rgba(0,0,0,0.14)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+
+    <!-- 15 bulbs -->
+    <div class="bulbs">
+      <div class="bulb" style="--c:#ff4fa2"></div>
+      <div class="bulb" style="--c:#ffd166"></div>
+      <div class="bulb" style="--c:#9bdeff"></div>
+      <div class="bulb" style="--c:#b8ffb8"></div>
+      <div class="bulb" style="--c:#c7b1ff"></div>
+      <div class="bulb" style="--c:#ff9f9f"></div>
+      <div class="bulb" style="--c:#ff78bd"></div>
+      <div class="bulb" style="--c:#ffe79a"></div>
+      <div class="bulb" style="--c:#7bffb2"></div>
+      <div class="bulb" style="--c:#8ad7ff"></div>
+      <div class="bulb" style="--c:#ff5aa8"></div>
+      <div class="bulb" style="--c:#ffd6ff"></div>
+      <div class="bulb" style="--c:#b5a0ff"></div>
+      <div class="bulb" style="--c:#ffa05a"></div>
+      <div class="bulb" style="--c:#7dffea"></div>
+    </div>
+  </div>
+
+  <div class="bigPop" id="bigPop">
+    <div class="text">YAYYY HAPPY BIRTHDAY TO YOUUU 🥳💖</div>
+  </div>
+
+  <!-- MODAL 1: Dim lights -->
+  <div class="modalBackdrop show" id="dimModal">
+    <div class="modal">
+      <h3>Madamji 🎀</h3>
+      <p>Before we cut the cake...<br/>do dim the lights 😌✨</p>
+      <button class="btn" id="dimBtn">DIM THE LIGHTS 🌙</button>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Add lights -->
+  <div class="modalBackdrop" id="lightsModal">
+    <div class="modal">
+      <h3>Okayyy Cuutu 💖</h3>
+      <p>Now add cute birthday lights 😌🎉</p>
+      <button class="btn" id="lightsBtn">ADD LIGHTS 🎀✨</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="title">Happy Birthday Cuutu 💖</div>
+    <div class="subtitle">Now blow the candles 😋🕯️</div>
+
+    <div class="cakeFrame">
+      <div class="cakeCanvas">
+        <div class="candles" id="candles"></div>
+
+        <div class="icingTop"></div>
+        <div class="drips">
+          <div class="drip d1"></div>
+          <div class="drip d2"></div>
+          <div class="drip d3"></div>
+          <div class="drip d4"></div>
+          <div class="drip d5"></div>
+        </div>
+
+        <div class="sprinkles">
+          <span style="--c:#ffd166;--r:14deg"></span>
+          <span style="--c:#9bdeff;--r:-10deg"></span>
+          <span style="--c:#b8ffb8;--r:8deg"></span>
+          <span style="--c:#c7b1ff;--r:-16deg"></span>
+          <span style="--c:#ff9f9f;--r:11deg"></span>
+        </div>
+
+        <div class="cakeBody"></div>
+
+        <div class="dots">
+          <div class="dot" style="--c:#ffd166"></div>
+          <div class="dot" style="--c:#9bdeff"></div>
+          <div class="dot" style="--c:#b8ffb8"></div>
+          <div class="dot" style="--c:#c7b1ff"></div>
+          <div class="dot" style="--c:#ff9f9f"></div>
+        </div>
+
+        <div class="plate"></div>
+      </div>
+    </div>
+
+    <div class="hint" id="hint">
+      First set the vibes 😌✨
+    </div>
+  </div>
+
+  <script>
+    const candlesWrap = document.getElementById("candles");
+    const bigPop = document.getElementById("bigPop");
+    const hint = document.getElementById("hint");
+
+    const dimModal = document.getElementById("dimModal");
+    const dimBtn = document.getElementById("dimBtn");
+
+    const lightsModal = document.getElementById("lightsModal");
+    const lightsBtn = document.getElementById("lightsBtn");
+
+    const stringLights = document.getElementById("stringLights");
+
+    let candlesLit = 5;
+    let vibeReady = false;
+
+    // ===== MODAL FLOW =====
+    dimBtn.addEventListener("click", () => {
+      document.body.classList.add("vibeDark");
+      dimModal.classList.remove("show");
+
+      setTimeout(() => {
+        lightsModal.classList.add("show");
+      }, 450);
+    });
+
+    lightsBtn.addEventListener("click", () => {
+      stringLights.classList.add("show");
+      lightsModal.classList.remove("show");
+      vibeReady = true;
+      hint.textContent = "Now blow the candles 😋🕯️";
+    });
+
+    function makeCandle() {
+      const candle = document.createElement("div");
+      candle.className = "candle";
+      candle.dataset.lit = "1";
+
+      const wick = document.createElement("div");
+      wick.className = "wick";
+
+      const flame = document.createElement("div");
+      flame.className = "flame";
+
+      const smoke = document.createElement("div");
+      smoke.className = "smoke";
+
+      candle.appendChild(wick);
+      candle.appendChild(flame);
+      candle.appendChild(smoke);
+
+      candle.addEventListener("click", () => {
+        if (!vibeReady) return;
+        if (candle.dataset.lit !== "1") return;
+
+        candle.dataset.lit = "0";
+        flame.classList.add("off");
+        smoke.classList.add("show");
+        setTimeout(() => smoke.classList.remove("show"), 900);
+
+        candlesLit--;
+        if (candlesLit <= 0) {
+          hint.textContent = "Yayyy!! 🎉🎂💖";
+          bigPop.classList.add("show");
+
+          setTimeout(() => {
+            bigPop.classList.remove("show");
+            window.location.href = "feed.html";
+          }, 1700);
+        }
+      });
+
+      return candle;
+    }
+
+    function buildCandles(n = 5) {
+      candlesWrap.innerHTML = "";
+      candlesLit = n;
+      for (let i = 0; i < n; i++) {
+        candlesWrap.appendChild(makeCandle());
+      }
+    }
+
+    buildCandles(5);
+  </script>
+</body>
+</html>

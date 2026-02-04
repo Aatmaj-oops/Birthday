@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feed Aaru 🍰💖</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(#cfe9ff, #ffffff);
+      font-family: Arial, sans-serif;
+      user-select: none;
+    }
+
+    /* Ground */
+    .ground {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 90px;
+      background: linear-gradient(#b7f0c7, #7ad69a);
+      border-top: 4px solid rgba(0,0,0,0.1);
+    }
+
+    /* Hint */
+    .hint {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.88);
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.3;
+      backdrop-filter: blur(6px);
+      max-width: 300px;
+      z-index: 1000;
+    }
+
+    /* Button */
+    .feedBtn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      padding: 12px 14px;
+      background: linear-gradient(135deg, #ff4fa2, #ff78bd);
+      color: white;
+      border: none;
+      border-radius: 999px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(255, 79, 162, 0.22);
+      z-index: 1000;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .feedBtn:hover { filter: brightness(1.02); }
+    .feedBtn:active { transform: scale(0.97); }
+
+    /* Knife cursor mode */
+    body.knifeMode {
+      cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='64' height='64'><text y='44' x='6' font-size='44'>🔪</text></svg>") 16 16, auto;
+    }
+
+    /* Cake area */
+    .cakeZone {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%);
+      width: min(86vw, 520px);
+      height: 280px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.65);
+      border: 2px solid rgba(255, 105, 180, 0.22);
+      box-shadow: 0 18px 44px rgba(0,0,0,0.14);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      z-index: 100;
+    }
+
+    /* Simple colorful cake inside this file */
+    .cakeCanvas {
+      position: absolute;
+      inset: 14px;
+      border-radius: 18px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.75), rgba(255,255,255,0.35));
+      border: 2px solid rgba(255,105,180,0.18);
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .plate{
+      position:absolute;
+      left:50%;
+      bottom: 14px;
+      transform: translateX(-50%);
+      width: 86%;
+      height: 44px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.45));
+      box-shadow:
+        0 18px 30px rgba(0,0,0,0.10),
+        inset 0 -10px 0 rgba(0,0,0,0.05);
+      border: 2px solid rgba(255,105,180,0.16);
+    }
+
+    .cakeBody{
+      position:absolute;
+      left:50%;
+      bottom: 38px;
+      transform: translateX(-50%);
+      width: 78%;
+      height: 170px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, #ff60ad 0%, #ff2f86 55%, #ff1a78 100%);
+      box-shadow:
+        0 26px 34px rgba(0,0,0,0.16),
+        inset 0 -18px 0 rgba(0,0,0,0.10);
+    }
+
+    .icingTop{
+      position:absolute;
+      left:50%;
+      bottom: 196px;
+      transform: translateX(-50%);
+      width: 72%;
+      height: 74px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #ffffff 0%, #ffe8f3 60%, #ffd6e8 100%);
+      box-shadow:
+        0 14px 26px rgba(0,0,0,0.10),
+        inset 0 -12px 0 rgba(0,0,0,0.06);
+    }
+
+    .drips{
+      position:absolute;
+      left:50%;
+      bottom: 170px;
+      transform: translateX(-50%);
+      width: 72%;
+      height: 70px;
+      pointer-events:none;
+    }
+    .drip{
+      position:absolute;
+      top: 0;
+      width: 34px;
+      border-radius: 0 0 22px 22px;
+      background: linear-gradient(180deg, #fff, #ffe8f3);
+      box-shadow: inset 0 -10px 0 rgba(0,0,0,0.04);
+      opacity: 0.98;
+    }
+    .drip.d1{ left: 6%;  height: 54px; }
+    .drip.d2{ left: 22%; height: 66px; width: 38px; }
+    .drip.d3{ left: 42%; height: 58px; width: 36px; }
+    .drip.d4{ left: 62%; height: 70px; width: 40px; }
+    .drip.d5{ left: 80%; height: 52px; width: 34px; }
+
+    /* Slice */
+    .slice {
+      position: absolute;
+      width: 74px;
+      height: 74px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(255,255,255,0.9) 0 20%, transparent 21%),
+        linear-gradient(180deg, #ffd1e6, #ff4fa2);
+      box-shadow: 0 18px 28px rgba(0,0,0,0.18);
+      display: grid;
+      place-items: center;
+      font-weight: 1000;
+      transform: rotate(-10deg);
+      z-index: 2000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.18s ease;
+    }
+    .slice.show { opacity: 1; }
+
+    /* ===== YOUR GIRL CODE (UNCHANGED STYLES) ===== */
+    .girl-wrap {
+      position: absolute;
+      bottom: 22px;
+      left: 0;
+      width: 150px;
+      height: 180px;
+      pointer-events: auto;
+      cursor: grab;
+      touch-action: none;
+      z-index: 999; /* ensure above cake if overlapping */
+    }
+    .girl-wrap:active { cursor: grabbing; }
+
+    .girl {
+      position: relative;
+      width: 150px;
+      height: 180px;
+      transform-origin: center bottom;
+    }
+
+    .shadow {
+      position: absolute;
+      bottom: 6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78px;
+      height: 16px;
+      background: rgba(0,0,0,0.18);
+      border-radius: 50%;
+      filter: blur(1px);
+      z-index: -1;
+    }
+
+    .bubble {
+      position: absolute;
+      top: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(0,0,0,0.12);
+      padding: 6px 10px;
+      border-radius: 14px;
+      font-size: 12px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10);
+    }
+    .bubble::after {
+      content: "";
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: rgba(255,255,255,0.95);
+      border-left: 1px solid rgba(0,0,0,0.12);
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .head-wrap{
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 90px;
+      z-index: 10;
+    }
+
+    .hair-back{
+      position: absolute;
+      top: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 86px;
+      height: 62px;
+      background: #3b2a22;
+      border-radius: 45px 45px 35px 35px;
+      z-index: 1;
+    }
+
+    .head{
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      background: #ffd7c2;
+      border-radius: 50%;
+      box-shadow: inset -4px -6px 0 rgba(0,0,0,0.08);
+      z-index: 5;
+    }
+
+    .hair-top{
+      position: absolute;
+      top: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 72px;
+      height: 22px;
+      background: #3b2a22;
+      border-radius: 25px 25px 18px 18px;
+      z-index: 7;
+      opacity: 0.95;
+    }
+
+    .bow{
+      position: absolute;
+      top: 0px;
+      left: 56%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 18px;
+      background: #ff4d7d;
+      border-radius: 6px;
+      box-shadow: 10px 0 0 #ff4d7d;
+      z-index: 100;
+    }
+    .bow::after{
+      content:"";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 6px;
+      height: 6px;
+      transform: translate(-50%, -50%);
+      background: #ff2d64;
+      border-radius: 50%;
+    }
+
+    .eye{
+      position: absolute;
+      top: 24px;
+      width: 12px;
+      height: 12px;
+      z-index: 50;
+    }
+    .eye.left{ left: 18px; }
+    .eye.right{ right: 18px; }
+
+    .eye-ball{
+      width: 12px;
+      height: 12px;
+      background: #222;
+      border-radius: 50%;
+      transform-origin: center;
+    }
+
+    .blush{
+      position: absolute;
+      top: 38px;
+      width: 14px;
+      height: 10px;
+      background: rgba(255,105,135,0.4);
+      border-radius: 50%;
+      z-index: 50;
+    }
+    .blush.left{ left: 8px; }
+    .blush.right{ right: 8px; }
+
+    .smile{
+      position: absolute;
+      top: 42px;
+      left: 50%;
+      width: 22px;
+      height: 14px;
+      transform: translateX(-50%);
+      border-bottom: 3px solid #cc4a4a;
+      border-radius: 0 0 20px 20px;
+      z-index: 50;
+    }
+
+    .dress {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 78px;
+      height: 68px;
+      background: #ff74b8;
+      border-radius: 18px 18px 22px 22px;
+      box-shadow: inset -4px -6px 0 rgba(0,0,0,0.08);
+      z-index: 3;
+    }
+
+    .skirt {
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 104px;
+      height: 30px;
+      background: #ff4da6;
+      border-radius: 0 0 26px 26px;
+      box-shadow: inset -4px -6px 0 rgba(0,0,0,0.08);
+    }
+
+    .arm {
+      position: absolute;
+      top: 98px;
+      width: 18px;
+      height: 44px;
+      background: #ffd7c2;
+      border-radius: 12px;
+      transform-origin: top center;
+      z-index: 6;
+    }
+    .arm.left  { left: 18px;  transform: rotate(16deg); }
+    .arm.right { right: 18px; transform: rotate(-16deg); }
+
+    .hand {
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 18px;
+      height: 18px;
+      background: #ffd7c2;
+      border-radius: 50%;
+      box-shadow: inset -2px -2px 0 rgba(0,0,0,0.06);
+    }
+
+    .leg {
+      position: absolute;
+      top: 145px;
+      width: 18px;
+      height: 40px;
+      background: #ffd7c2;
+      border-radius: 12px;
+      transform-origin: top center;
+      z-index: 2;
+    }
+    .leg.left { left: 60px; }
+    .leg.right { right: 60px; }
+
+    .shoe {
+      position: absolute;
+      bottom: -6px;
+      left: -2px;
+      width: 22px;
+      height: 12px;
+      background: #222;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="hint" id="hint">
+    🎉 Candles are blown! <br/>
+    Click <b>FEED ANOTHER PIECE</b> to cut cake 🍰 <br/>
+    Then take it to Aaru 😋
+  </div>
+
+  <button class="feedBtn" id="feedAnotherBtn">FEED ANOTHER PIECE 🍰</button>
+
+  <div class="cakeZone" id="cakeZone">
+    <div class="cakeCanvas" id="cakeCanvas">
+      <div class="icingTop"></div>
+      <div class="drips">
+        <div class="drip d1"></div>
+        <div class="drip d2"></div>
+        <div class="drip d3"></div>
+        <div class="drip d4"></div>
+        <div class="drip d5"></div>
+      </div>
+      <div class="cakeBody"></div>
+      <div class="plate"></div>
+    </div>
+  </div>
+
+  <div class="ground"></div>
+
+  <!-- SLICE -->
+  <div class="slice" id="slice">🍰</div>
+
+  <!-- ===== YOUR GIRL HTML (UNCHANGED) ===== -->
+  <div class="girl-wrap" id="girlWrap">
+    <div class="girl" id="girl">
+      <div class="bubble" id="bubble">Hi 👋</div>
+      <div class="shadow" id="shadow"></div>
+
+      <div class="head-wrap">
+        <div class="hair-back"></div>
+
+        <div class="head" id="head">
+          <div class="eye left">
+            <div class="eye-ball" id="eyeL"></div>
+          </div>
+          <div class="eye right">
+            <div class="eye-ball" id="eyeR"></div>
+          </div>
+
+          <div class="blush left"></div>
+          <div class="blush right"></div>
+          <div class="smile"></div>
+        </div>
+
+        <div class="hair-top"></div>
+        <div class="bow"></div>
+      </div>
+
+      <div class="arm left" id="armL"><div class="hand"></div></div>
+      <div class="arm right" id="armR"><div class="hand"></div></div>
+
+      <div class="dress" id="dress">
+        <div class="skirt"></div>
+      </div>
+
+      <div class="leg left" id="legL"><div class="shoe"></div></div>
+      <div class="leg right" id="legR"><div class="shoe"></div></div>
+    </div>
+  </div>
+
+  <!-- GSAP -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/Draggable.min.js"></script>
+
+  <script>
+    // =========================
+    // CAKE CUT + FEED LOOP (ADDED)
+    // =========================
+    const feedAnotherBtn = document.getElementById("feedAnotherBtn");
+    const cakeZone = document.getElementById("cakeZone");
+    const cakeCanvas = document.getElementById("cakeCanvas");
+    const sliceEl = document.getElementById("slice");
+    const hintEl = document.getElementById("hint");
+
+    let knifeMode = false;
+    let holdingSlice = false;
+
+    function enableKnifeMode(){
+      knifeMode = true;
+      holdingSlice = false;
+      document.body.classList.add("knifeMode");
+      sliceEl.classList.remove("show");
+      hintEl.innerHTML = "🔪 Knife mode ON!<br/>Click the cake to cut a slice 🍰";
+    }
+
+    function spawnSlice(){
+      const rect = cakeZone.getBoundingClientRect();
+      sliceEl.style.left = (rect.left + rect.width * 0.55) + "px";
+      sliceEl.style.top  = (rect.top + rect.height * 0.52) + "px";
+      sliceEl.classList.add("show");
+
+      holdingSlice = true;
+      knifeMode = false;
+      document.body.classList.remove("knifeMode");
+
+      hintEl.innerHTML = "Now take the cake slice to Aaru 😋💖";
+    }
+
+    feedAnotherBtn.addEventListener("click", () => {
+      enableKnifeMode();
+    });
+
+    cakeCanvas.addEventListener("pointerdown", () => {
+      if (!knifeMode || holdingSlice) return;
+      spawnSlice();
+    });
+
+    function moveSlice(x, y){
+      sliceEl.style.left = (x - 18) + "px";
+      sliceEl.style.top  = (y - 18) + "px";
+      checkFeedAaru(x, y);
+    }
+
+    window.addEventListener("pointermove", (e) => {
+      if (!holdingSlice) return;
+      moveSlice(e.clientX, e.clientY);
+    });
+
+    window.addEventListener("touchmove", (e) => {
+      if (!holdingSlice) return;
+      const t = e.touches[0];
+      moveSlice(t.clientX, t.clientY);
+    }, { passive: true });
+
+    function checkFeedAaru(x, y){
+      const girlRect = wrap.getBoundingClientRect(); // wrap exists in your code below
+      const mouthX = girlRect.left + girlRect.width * 0.52;
+      const mouthY = girlRect.top + girlRect.height * 0.35;
+
+      const dx = x - mouthX;
+      const dy = y - mouthY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      if (dist < 55) {
+        eatSlice();
+      }
+    }
+
+    function eatSlice(){
+      if (!holdingSlice) return;
+      holdingSlice = false;
+
+      sliceEl.classList.remove("show");
+
+      // Make girl react using YOUR say() function
+      say("Yayyy yummy 😋💖", 1400);
+
+      hintEl.innerHTML = "Aaru ate it 😋🎀<br/>Click FEED ANOTHER PIECE 🍰";
+    }
+
+    // =========================
+    // YOUR ORIGINAL GIRL SCRIPT (UNCHANGED)
+    // =========================
+    const wrap = document.getElementById("girlWrap");
+    const girl = document.getElementById("girl");
+    const shadow = document.getElementById("shadow");
+
+    const armL = document.getElementById("armL");
+    const armR = document.getElementById("armR");
+    const legL = document.getElementById("legL");
+    const legR = document.getElementById("legR");
+
+    const bubble = document.getElementById("bubble");
+    const eyeL = document.getElementById("eyeL");
+    const eyeR = document.getElementById("eyeR");
+
+    let isFalling = false;
+    let isDragging = false;
+    let randomMoveTimer = null;
+
+    // ====== Speech bubble helper ======
+    function say(text, ms=1200){
+      bubble.textContent = text;
+      gsap.killTweensOf(bubble);
+      gsap.to(bubble, { opacity: 1, y: -6, duration: 0.2, ease: "power2.out" });
+      gsap.to(bubble, { opacity: 0, y: 0, duration: 0.25, delay: ms/1000, ease: "power2.inOut" });
+    }
+
+    // ====== Blink animation ======
+    function blink(){
+      gsap.to([eyeL, eyeR], { scaleY: 0.1, duration: 0.08, yoyo: true, repeat: 1, ease: "power1.inOut" });
+      setTimeout(blink, gsap.utils.random(1800, 4200)); // random blink interval
+    }
+    blink();
+
+    // ===== Walk cycle =====
+    const walkTl = gsap.timeline({ repeat: -1, yoyo: true, paused: true });
+    walkTl
+      .to(legL,  { rotation: 25, duration: 0.25, ease: "power1.inOut" }, 0)
+      .to(legR,  { rotation: -25, duration: 0.25, ease: "power1.inOut" }, 0)
+      .to(armL,  { rotation: -18, duration: 0.25, ease: "power1.inOut" }, 0)
+      .to(armR,  { rotation: 18, duration: 0.25, ease: "power1.inOut" }, 0)
+      .to(girl,  { y: -3, duration: 0.25, ease: "power1.inOut" }, 0)
+      .to(shadow,{ scaleX: 0.85, duration: 0.25, ease: "power1.inOut" }, 0);
+
+    function startWalk(){ walkTl.play(); }
+    function stopWalk(){
+      walkTl.pause();
+      gsap.to([legL, legR, armL, armR], { rotation: 0, duration: 0.2 });
+      gsap.to(girl, { y: 0, duration: 0.2 });
+      gsap.to(shadow, { scaleX: 1, duration: 0.2 });
+    }
+
+    // ===== Spawn from right every 1 minute =====
+    function spawnFromRight(){
+      if (isDragging || isFalling) return;
+
+      const screenW = window.innerWidth;
+      gsap.killTweensOf(wrap);
+
+      gsap.set(wrap, { x: screenW + 220, y: 0 });
+      startWalk();
+
+      say("Hii I am Aaruu the cutie 😊",5000);
+
+      gsap.to(wrap, {
+        x: screenW - 240,
+        duration: 3.2,
+        ease: "power2.out",
+        onComplete: () => {
+          stopWalk();
+          doRandomMove();
+        }
+      });
+    }
+
+    // ===== Random moves =====
+    function doRandomMove(){
+      if (isDragging || isFalling) return;
+
+      const actions = [jump, walkStepsLeft, walkStepsRight, bounceCute, waveOnce];
+      const pick = actions[Math.floor(Math.random() * actions.length)];
+      pick();
+
+      clearTimeout(randomMoveTimer);
+      randomMoveTimer = setTimeout(doRandomMove, gsap.utils.random(2800, 6500));
+    }
+
+    function jump(){
+      say("Boing! 🌸", 800);
+      gsap.killTweensOf(wrap);
+      gsap.to(wrap, { y: -85, duration: 0.35, ease: "power2.out", yoyo: true, repeat: 1 });
+      gsap.to(shadow, { scaleX: 0.65, duration: 0.35, yoyo: true, repeat: 1 });
+      gsap.to(girl, { rotation: 4, duration: 0.18, yoyo: true, repeat: 1 });
+    }
+
+    function walkStepsLeft(){
+      startWalk();
+      gsap.to(wrap, {
+        x: "-=95",
+        duration: 1.2,
+        ease: "power1.inOut",
+        onComplete: () => stopWalk()
+      });
+    }
+
+    function walkStepsRight(){
+      startWalk();
+      gsap.to(wrap, {
+        x: "+=95",
+        duration: 1.2,
+        ease: "power1.inOut",
+        onComplete: () => stopWalk()
+      });
+    }
+
+    function bounceCute(){
+      gsap.to(girl, { scale: 1.05, duration: 0.18, yoyo: true, repeat: 1, ease: "power1.inOut" });
+    }
+
+    function waveOnce(){
+      say("Hello! 👋", 900);
+      gsap.to(armR, { rotation: -60, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 5 });
+    }
+
+    // ===== Hover wave + talk =====
+    wrap.addEventListener("mouseenter", () => {
+      if (isDragging || isFalling) return;
+      say("Hi! Drag me 😊", 1200);
+      gsap.to(armR, { rotation: -65, duration: 0.2, ease: "power2.out" });
+      gsap.to(armR, { rotation: -20, duration: 0.25, delay: 0.25, ease: "power2.inOut" });
+    });
+
+    // ===== Drag behavior =====
+    Draggable.create(wrap, {
+      type: "x,y",
+      bounds: window,
+      inertia: false,
+      onPress: function(){
+        isDragging = true;
+        clearTimeout(randomMoveTimer);
+        gsap.killTweensOf(wrap);
+        stopWalk();
+        say("Wheee! 😄", 900);
+      },
+      onDrag: function(){
+        gsap.to(girl, {
+          rotation: gsap.utils.clamp(-12, 12, this.deltaX / 8),
+          duration: 0.08
+        });
+      },
+      onRelease: function(){
+        isDragging = false;
+        gsap.to(girl, { rotation: 0, duration: 0.2 });
+
+        gsap.to(wrap, {
+          y: 0,
+          duration: 0.55,
+          ease: "bounce.out",
+          onComplete: () => doRandomMove()
+        });
+      }
+    });
+
+    // ===== Click = fall =====
+    wrap.addEventListener("click", () => {
+      if (isDragging || isFalling) return;
+
+      isFalling = true;
+      clearTimeout(randomMoveTimer);
+      gsap.killTweensOf(wrap);
+      stopWalk();
+
+      say("Aaa! 😵", 900);
+
+      gsap.to(girl, { rotation: 95, duration: 0.35, ease: "power2.in" });
+      gsap.to(wrap, {
+        y: 130,
+        duration: 0.45,
+        ease: "power2.in",
+        onComplete: () => {
+          setTimeout(() => {
+            say("I’m okay 😌", 900);
+            gsap.to(wrap, { y: 0, duration: 0.55, ease: "bounce.out" });
+            gsap.to(girl, {
+              rotation: 0,
+              duration: 0.55,
+              ease: "power2.out",
+              onComplete: () => {
+                isFalling = false;
+                doRandomMove();
+              }
+            });
+          }, 1000);
+        }
+      });
+    });
+
+    // ===== Timers =====
+    spawnFromRight();
+    setInterval(spawnFromRight, 60000);
+    setTimeout(doRandomMove, 3800);
+
+    window.addEventListener("resize", () => {
+      const rect = wrap.getBoundingClientRect();
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      if (rect.left < 0) gsap.set(wrap, { x: 10 });
+      if (rect.right > w) gsap.set(wrap, { x: w - 180 });
+      if (rect.top < 0) gsap.set(wrap, { y: 10 });
+      if (rect.bottom > h) gsap.set(wrap, { y: h - 240 });
+    });
+
+    // Start in feed mode once (optional)
+    // enableKnifeMode();
+  </script>
+</body>
+</html>
