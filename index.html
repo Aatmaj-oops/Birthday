@@ -444,7 +444,7 @@
     function startCountdownTest() {
       if (countdownInterval) return;
 
-      let secondsLeft = 60; // TEST: 1 minute
+      let secondsLeft = 1800; // TEST: 1 minute
       countdownEl.textContent = formatTime(secondsLeft);
 
       countdownInterval = setInterval(() => {
