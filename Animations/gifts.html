@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Aaru’s Gifts 🎁</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Handwritten ink style font -->
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+DW+Pica&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  height:100vh;
+  background: radial-gradient(circle at top,#2a003a,#0b0014);
+  font-family:'IM Fell DW Pica',serif;
+  overflow:hidden;
+  color:#3a1f0f;
+}
+
+/* Top message */
+.message{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  background:rgba(255,255,255,0.9);
+  padding:12px 18px;
+  border-radius:14px;
+  font-size:15px;
+  z-index:20;
+}
+
+/* Boxes */
+.boxWrap{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:70px;
+  z-index:10;
+}
+
+.box{
+  width:130px;
+  height:130px;
+  background:linear-gradient(135deg,#ff4da6,#ff7ac6);
+  border-radius:14px;
+  position:relative;
+  cursor:pointer;
+  box-shadow:0 20px 40px rgba(0,0,0,0.4);
+  transition:.3s;
+}
+.box:hover{transform:translateY(-6px) scale(1.04)}
+
+.ribbonV,.ribbonH{
+  position:absolute;
+  background:#ffd700;
+}
+.ribbonV{
+  width:22px;height:100%;
+  left:50%;transform:translateX(-50%);
+}
+.ribbonH{
+  height:22px;width:100%;
+  top:50%;transform:translateY(-50%);
+}
+.bow{
+  position:absolute;
+  top:-18px;left:50%;
+  transform:translateX(-50%);
+  width:40px;height:24px;
+  background:#ffd700;
+  border-radius:50%;
+}
+.bow::before,.bow::after{
+  content:"";
+  position:absolute;
+  width:28px;height:18px;
+  background:#ffd700;
+  border-radius:50%;
+}
+.bow::before{left:-18px}
+.bow::after{right:-18px}
+
+/* Fade background */
+.fadeAll{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.55);
+  opacity:0;
+  pointer-events:none;
+  transition:.4s;
+  z-index:25;
+}
+.fadeAll.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* FULL SCREEN SCROLL */
+.scroll{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.35);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  opacity:0;
+  pointer-events:none;
+  z-index:30;
+}
+.scroll.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* Parchment */
+.paper{
+  width:100vw;
+  height:100vh;
+  background:radial-gradient(circle at top,#f8efd8,#e3cfa3);
+  padding:60px 10vw;
+  box-shadow:inset 0 0 90px rgba(0,0,0,0.45);
+  transform-origin:top center;
+  animation:unroll .9s ease forwards;
+}
+@keyframes unroll{
+  from{transform:scaleY(0);opacity:0}
+  to{transform:scaleY(1);opacity:1}
+}
+
+.paper p{
+  font-size:26px;
+  line-height:1.8;
+  letter-spacing:0.6px;
+  text-align:center;
+}
+
+.closeBtn{
+  margin-top:40px;
+  text-align:center;
+}
+.closeBtn button{
+  border:none;
+  padding:10px 22px;
+  border-radius:999px;
+  background:#7b3f00;
+  color:white;
+  font-family:inherit;
+  font-size:15px;
+  cursor:pointer;
+}
+
+/* FINAL SCREEN */
+.final{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:white;
+  background:
+    radial-gradient(circle at top,#ffb3d9,#ff5fa2,#4a003a);
+  opacity:0;
+  pointer-events:none;
+  z-index:50;
+  overflow:visible;
+}
+.final.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.final h1{
+  font-size:80px;
+  font-weight:900;
+  background:linear-gradient(90deg,#fff700,#ff3cac,#00eaff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  /* 🔥 THIS FIXES VISIBILITY */
+  text-shadow:
+    0 4px 10px rgba(0,0,0,0.35),
+    0 0 20px rgba(255,255,255,0.35);
+
+  animation:pop 0.9s ease;
+}
+
+
+.final h2{
+  margin-top:14px;
+  font-size:26px;
+  font-weight:400;
+  color:#fff4fb;
+}
+
+.final p{
+  margin-top:26px;
+  font-size:20px;
+  opacity:0.9;
+}
+
+@keyframes pop{
+  0%{transform:scale(0.4);opacity:0}
+  70%{transform:scale(1.1)}
+  100%{transform:scale(1)}
+}
+
+/* Confetti */
+.confetti{
+  position:absolute;
+  width:8px;height:14px;
+  top:-20px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg)}
+}
+
+/* Fire hearts */
+.heart{
+  position:absolute;
+  font-size:26px;
+  animation:rise 2.4s ease forwards;
+}
+@keyframes rise{
+  from{opacity:1;transform:translateY(0)}
+  to{opacity:0;transform:translateY(-200px)}
+}
+@keyframes balloonRise{
+  from{
+    transform:translateY(0);
+    opacity:1;
+  }
+  to{
+    transform:translateY(-120vh);
+    opacity:1;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="message">Aaru is in one of them… click to open 🎁</div>
+
+<div class="boxWrap">
+  <div class="box" data-id="0"><div class="ribbonV"></div><div class="ribbonH"></div><div class="bow"></div></div>
+  <div class="box" data-id="1"><div class="ribbonV"></div><div class="ribbonH"></div><div class="bow"></div></div>
+  <div class="box" data-id="2"><div class="ribbonV"></div><div class="ribbonH"></div><div class="bow"></div></div>
+</div>
+
+<div class="fadeAll" id="fade"></div>
+
+<div class="scroll" id="scroll">
+  <div class="paper">
+    <p id="scrollText"></p>
+    <div class="closeBtn">
+      <button onclick="closeScroll()">Roll it back</button>
+    </div>
+  </div>
+</div>
+
+<div class="final" id="final">
+  <div>
+    <h1>🎉 HAPPY BIRTHDAY AARU 🎂</h1>
+    <h2>May your day be as cute, warm & magical as you 💖</h2>
+
+    <p>
+      You’re my only Aaru.<br>
+      Why would I ever need to find you somewhere else? 🌸
+    </p>
+  </div>
+</div>
+
+<script>
+const texts=[ "My Aaruuu, I am writting this while your mad at me for not coming to your party, and you seem mad about it. Honestly why won't I come ,my cutuu your. YOUR CUTE I don't know what else to say. I know this where i have to type out part where I say about you and appreciate you and all I should think I alot . This is gift I have put the most effort on till now, more than the jhumka and teh savanna ka order I was hyping that my gift would be the best coz of this . I started making this from when I came to mys mostly every 2 to 3 days I open this and work on it .Why am i doing all this ? I am not sure, Was I hesistant  to put my every knowledge and and free time(okay not free time) to make this for u , Absolutely no .I Love making you happy and seeing you smile .....is nice to look at   ",
+  "OKay this is part where i tell about urseld to you idk wtf is that but I got to know you use it when your low so I will be honest. Your wonderful . Your the most cheerful person I have ever seen (today kerthana said it too) i was honestly confused what should i use to describe you but when she used that i got to know yeha damn she is the most cheerful person I hav mee, your smile ohh my goodddd its soo fucking beautiful , it looks so genuine and its as if it has some magical powers behind it to mak the opposite person smile. Your anger your sadness ur jsut so expressive I personally LOVE it because I cannot do these things. okay more about you I love your music taste before i thaught all mysore people are dumb and dont know anything about real music but you my god the way we sing togeather and vibe to songs ...ahh perfect! Your taste in dresses are also so on point the perfect mixture of western and classical . I will tell you this the wya you talk to animals its so fucking beautiful , I personally feel you need be so pure of heart to connect with animals  I just cant highlight how such a good thing it is , anddddd youre pretty bro i just dk how , You look very cute and pretty today ahh idk how to express i can eat you , andd your such a wonderful person like i told in the insta message whatever emotions you have u have it truly, you care you care soo fully and completly, you get angry , you get it soo purely ah yeah that day in video call when you got mad at me and you gave a stare with those eyes , my god I shit myself, ",
+"I felt that stare gazed through into my soul. Did I say your cute and pretty? Yeha i did .. hehe i just cant stop can i... andd your every energetic ahh its nice ,dont look at its bad, sometimes you do inspire others to have energy like you  ,,, anddd I love spending time with you I am picky about whom i spend i time with and spedning time with you isnt draining my energy at all, honestly idk how time passes in taht parking lot jsut talking to you, the stuffs you say are also very cute the way you get worried about little things and think about it and all ,its cute and your gup chup  i myself didnt knew i could hear it , I am not saying it is more , i am sying I dont get bored of it , listening to your things i sometimes feel my bp raising .... amma okay and i dont get bored of ur gup chup idk what that is coz entire life i have hated these kinda stuff , , I honestly i wanted to do more but yeah not able to, otherwise I would love it make it more , I LIKE YOU ... yeh now i have no idea what should i tell but yeha dont be sad , that face should only have happiness in it, IK your probs and all but see i know your very mature and bold , and I Know you cn over come whatevr it is in your life .. and my cutu fine as hell....hehe. I want to type more but idk but HAPPPPYY BIIRTHHDAYYY MYY CUTUUUU ",
+ 
+  
+];
+
+const opened=new Set();
+const scroll=document.getElementById("scroll");
+const fade=document.getElementById("fade");
+const scrollText=document.getElementById("scrollText");
+const final=document.getElementById("final");
+
+document.querySelectorAll(".box").forEach(box=>{
+  box.onclick=()=>{
+    if(scroll.classList.contains("show")) return;
+
+    const id=box.dataset.id;
+    scrollText.textContent=texts[id];
+    scroll.classList.add("show");
+    fade.classList.add("show");
+
+    if(!opened.has(id)){
+      opened.add(id);
+
+      if(opened.size===3){
+        setTimeout(showFinal,15000);
+      }
+    }
+  };
+});
+
+function closeScroll(){
+  scroll.classList.remove("show");
+  fade.classList.remove("show");
+}
+
+let balloonInterval;
+
+function showFinal(){
+  final.classList.add("show");
+  launchConfetti();
+  launchHearts();
+
+  // 🎈 start continuous balloons
+  launchBalloons();
+  balloonInterval = setInterval(launchBalloons, 3500);
+}
+
+function launchConfetti(){
+  for(let i=0;i<120;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=`hsl(${Math.random()*360},100%,60%)`;
+    c.style.animationDuration=2+Math.random()*3+"s";
+    document.body.appendChild(c);
+  }
+}
+
+function launchHearts(){
+  for(let i=0;i<30;i++){
+    const h=document.createElement("div");
+    h.className="heart";
+    h.textContent="🔥💖";
+    h.style.left=Math.random()*100+"vw";
+    h.style.bottom="20px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),2500);
+  }
+}
+function launchBalloons(){
+  const colors = ["🎈","🎈","🎈","🎈","🎈"];
+  const total = 40; // 👈 35–40 balloons
+
+  for(let i=0;i<total;i++){
+    const b = document.createElement("div");
+    b.textContent = "🎈";
+
+    b.style.position = "absolute";
+    b.style.fontSize = (52 + Math.random()*28) + "px"; // BIG balloons
+    b.style.left = Math.random()*100 + "vw";
+    b.style.bottom = "-120px";
+    b.style.zIndex = "9999";
+
+    // random hue tint
+    b.style.filter = `hue-rotate(${Math.random()*360}deg)`;
+
+    // slower, floaty rise
+    b.style.animation = `balloonRise ${6 + Math.random()*4}s linear forwards`;
+
+    document.body.appendChild(b);
+
+    setTimeout(()=>b.remove(), 12000);
+  }
+}
+
+
+</script>
+
+</body>
+</html>
